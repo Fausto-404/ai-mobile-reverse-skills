@@ -77,7 +77,7 @@ ai-mobile-reverse-skills/
         ├── ida_target_loader.py              # IDA 自动导入
         └── sign_rebuilder.py                 # 签名算法重建
 ```
-<img width="1542" height="1024" alt="image" src="https://github.com/user-attachments/assets/ee33618f-7873-4460-a990-c9efa0567f46" />
+<img width="1702" height="1206" alt="image" src="https://github.com/user-attachments/assets/c23bcfa0-a5d4-4b69-a7f3-3382067e3e50" />
 
 
 ## 三、如何使用这个仓库
