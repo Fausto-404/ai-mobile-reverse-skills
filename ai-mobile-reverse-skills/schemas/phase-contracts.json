@@ -1,0 +1,142 @@
+{
+  "version": "1.0",
+  "description": "Machine-readable minimum inputs, outputs, and blockers for the six-phase mobile reverse workflow. tools/scripts/phase_guard.py consumes this contract for file-level handoff validation.",
+  "path_policy": {
+    "output_root": "{output_dir}",
+    "phase_dir_pattern": "{output_dir}/step{phase_number}/",
+    "legacy_flat_outputs": "read_only_compatibility"
+  },
+  "phases": [
+    {
+      "id": "phase_1",
+      "agent": "agents/agent-01-sample-recon.md",
+      "minimum_inputs": [
+        "output_dir",
+        "target_dir OR an open jadx-mcp session",
+        "analysis_mode: local_source OR jadx_mcp_session"
+      ],
+      "required_outputs": [
+        "step1/file_inventory.json",
+        "step1/tech_stack.json",
+        "step1/entrypoints.json",
+        "step1/env_guard_report.json"
+      ],
+      "local_source_outputs": [
+        "step1/raw_endpoints.json",
+        "step1/raw_secrets.json",
+        "step1/raw_native_bridges.json",
+        "step1/raw_env_guards.json",
+        "step1/ai_summary.json"
+      ],
+      "blockers": [
+        "no target_dir and no open jadx-mcp session"
+      ]
+    },
+    {
+      "id": "phase_2",
+      "agent": "agents/agent-02-protocol-mapper.md",
+      "minimum_inputs": [
+        "target_dir",
+        "output_dir",
+        "step1/entrypoints.json OR step1/file_inventory.json",
+        "Burp/Yakit MCP OR traffic_source"
+      ],
+      "required_outputs": [
+        "step2/api_endpoints.json",
+        "step2/protocol_map.json",
+        "step2/traffic_alignment.json"
+      ],
+      "optional_outputs": [
+        "step2/native_target_candidates.json"
+      ],
+      "blockers": [
+        "missing Phase 1 asset",
+        "missing traffic source and traffic MCP"
+      ]
+    },
+    {
+      "id": "phase_3",
+      "agent": "agents/agent-03-crypto-native-analyzer.md",
+      "minimum_inputs": [
+        "output_dir",
+        "step1/file_inventory.json",
+        "step2/protocol_map.json OR step2/api_endpoints.json",
+        "step1/entrypoints.json OR step1/raw_native_bridges.json OR native_analysis_source"
+      ],
+      "required_outputs": [
+        "step3/crypto_native_analysis.json",
+        "step3/jni_analysis.json"
+      ],
+      "optional_inputs": [
+        "ida-mcp",
+        "ghidra-mcp",
+        "step2/selected_native_target.json",
+        "APK unpacked lib/<abi>/*.so"
+      ],
+      "blockers": [
+        "missing Phase 1 inventory",
+        "missing Phase 2 protocol or endpoint result",
+        "missing JNI/SO entry material"
+      ]
+    },
+    {
+      "id": "phase_4",
+      "agent": "agents/agent-04-crypto-vuln-analyzer.md",
+      "minimum_inputs": [
+        "output_dir",
+        "step1/file_inventory.json",
+        "one core Phase 2 result",
+        "one Phase 3 native result OR step1/raw_native_bridges.json"
+      ],
+      "required_outputs": [
+        "step4/vuln_analysis.json",
+        "step4/risk_matrix.json"
+      ],
+      "optional_outputs": [
+        "step4/secrets_report.json",
+        "step4/jsbridge_analysis.json"
+      ],
+      "blockers": [
+        "missing Phase 1 inventory",
+        "missing both Phase 2 and Phase 3 core inputs"
+      ]
+    },
+    {
+      "id": "phase_5",
+      "agent": "agents/agent-05-validation-designer.md",
+      "minimum_inputs": [
+        "output_dir",
+        "step4/vuln_analysis.json",
+        "authorized_only: yes",
+        "at least two supporting prior-phase material categories"
+      ],
+      "required_outputs": [
+        "step5/validation_cases.json",
+        "step5/test_plan.md",
+        "step5/repro_steps.md",
+        "step5/poc_scripts_index.json"
+      ],
+      "blockers": [
+        "missing Phase 4 vulnerability findings",
+        "authorization scope is unclear"
+      ]
+    },
+    {
+      "id": "phase_6",
+      "agent": "agents/agent-06-reporter.md",
+      "minimum_inputs": [
+        "output_dir",
+        "step1/file_inventory.json",
+        "at least four categories of Phase 1-5 outputs"
+      ],
+      "required_outputs": [
+        "step6/security_report.md",
+        "step6/findings.json"
+      ],
+      "blockers": [
+        "missing Phase 1 inventory",
+        "insufficient prior-phase material for a complete report"
+      ]
+    }
+  ]
+}

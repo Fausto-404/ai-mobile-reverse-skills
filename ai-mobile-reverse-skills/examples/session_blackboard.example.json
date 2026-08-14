@@ -1,0 +1,41 @@
+{
+  "target_name": "demo_app",
+  "output_dir": "analysis_runs/current_run",
+  "created_at": "2026-01-01T00:00:00+00:00",
+  "facts": [
+    {
+      "id": "F001",
+      "from_phase": "phase_1",
+      "category": "credential_leak",
+      "level": "PATTERN",
+      "priority": "CRITICAL",
+      "content": {
+        "type": "stripe_key",
+        "masked_value": "sk_live_xxx...",
+        "file": "step1/raw_secrets.json"
+      },
+      "evidence": "step1/raw_secrets.json"
+    }
+  ],
+  "intents": [
+    {
+      "id": "I001",
+      "from_phase": "phase_2",
+      "target_phase": "phase_3",
+      "priority": "HIGH",
+      "subject": "native_trace",
+      "description": "字段 sign 疑似下沉到 JNI，候选 so: libsec.so，优先追踪其 native 实现",
+      "consumed": false
+    }
+  ],
+  "hints": [
+    {
+      "id": "H001",
+      "type": "stall_warning",
+      "from_phase": "phase_2",
+      "target_phase": "phase_3",
+      "message": "上游 phase_2 未产生新的关键 Fact，下一阶段注意可能存在覆盖盲区",
+      "consumed": false
+    }
+  ]
+}

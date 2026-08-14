@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Summary (Phase 1 compressed output)",
+  "description": "Compressed summary of Phase 1 raw_* outputs, optimized for LLM consumption",
+  "type": "object",
+  "required": ["summary_meta", "quick_overview", "endpoints", "secrets", "native_bridges", "env_guards", "cross_source_signals"],
+  "properties": {
+    "summary_meta": {
+      "type": "object",
+      "required": ["tool", "generated_at", "output_dir", "top_n", "sources_available", "sources_coverage"],
+      "properties": {
+        "tool": { "type": "string" },
+        "generated_at": { "type": "string" },
+        "output_dir": { "type": "string" },
+        "top_n": { "type": "integer" },
+        "sources_available": {
+          "type": "object",
+          "properties": {
+            "raw_endpoints": { "type": "boolean" },
+            "raw_secrets": { "type": "boolean" },
+            "raw_native_bridges": { "type": "boolean" },
+            "raw_env_guards": { "type": "boolean" },
+            "env_guard_report": { "type": "boolean" },
+            "frida_bypass_plan": { "type": "boolean" }
+          }
+        },
+        "sources_coverage": { "type": "string" }
+      }
+    },
+    "quick_overview": {
+      "type": "object",
+      "required": ["has_urls", "total_raw_endpoint_hits", "base_url_count", "has_secrets", "real_secret_count", "critical_secret_count", "has_native_bridges", "loaded_library_count", "jsbridge_interface_count", "has_env_guards", "guard_type_count", "phase2_blocking_count", "cross_signals"],
+      "properties": {
+        "has_urls": { "type": "boolean" },
+        "total_raw_endpoint_hits": { "type": "integer" },
+        "base_url_count": { "type": "integer" },
+        "has_secrets": { "type": "boolean" },
+        "real_secret_count": { "type": "integer" },
+        "critical_secret_count": { "type": "integer" },
+        "has_native_bridges": { "type": "boolean" },
+        "loaded_library_count": { "type": "integer" },
+        "jsbridge_interface_count": { "type": "integer" },
+        "has_env_guards": { "type": "boolean" },
+        "guard_type_count": { "type": "integer" },
+        "phase2_blocking_count": { "type": "integer" },
+        "cross_signals": { "type": "integer" }
+      }
+    },
+    "endpoints": {
+      "type": "object",
+      "required": ["available"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "total_raw_hits": { "type": "integer" },
+        "base_urls": { "type": "array" },
+        "api_endpoints": { "type": "array" },
+        "retrofit_endpoints": { "type": "array" },
+        "deeplink_configs": { "type": "array" },
+        "request_wrappers": { "type": "array" },
+        "crypto_field_names": { "type": "array", "items": { "type": "string" } },
+        "header_field_names": { "type": "array", "items": { "type": "string" } },
+        "full_data": { "type": "string" }
+      }
+    },
+    "secrets": {
+      "type": "object",
+      "required": ["available"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "total_real_hits": { "type": "integer" },
+        "total_placeholder_hits": { "type": "integer" },
+        "critical_findings": { "type": "array" },
+        "high_findings": { "type": "array" },
+        "by_category": { "type": "object" },
+        "full_data": { "type": "string" }
+      }
+    },
+    "native_bridges": {
+      "type": "object",
+      "required": ["available"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "total_raw_hits": { "type": "integer" },
+        "loaded_libraries": { "type": "array" },
+        "native_methods": { "type": "array" },
+        "jni_symbols": { "type": "array" },
+        "webview_bridges": { "type": "object" },
+        "native_crypto_signals": { "type": "object" },
+        "full_data": { "type": "string" }
+      }
+    },
+    "env_guards": {
+      "type": "object",
+      "required": ["available"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "total_guard_types_detected": { "type": "integer" },
+        "total_hits": { "type": "integer" },
+        "phase2_blocking_count": { "type": "integer" },
+        "detected_guard_types": { "type": "array" },
+        "phase2_blocking": { "type": "array" },
+        "frida_recommendations": { "type": "array" },
+        "manual_review_items": { "type": "array" },
+        "full_data": { "type": "object" }
+      }
+    },
+    "cross_source_signals": {
+      "type": "object",
+      "required": ["total_signals", "signals"],
+      "properties": {
+        "total_signals": { "type": "integer" },
+        "signals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["signal", "severity", "description", "action"],
+            "properties": {
+              "signal": { "type": "string" },
+              "severity": { "type": "string", "enum": ["Critical", "High", "Medium", "Low", "Info"] },
+              "description": { "type": "string" },
+              "action": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
